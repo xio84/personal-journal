@@ -6,18 +6,22 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { Session } from 'next-auth';
 
 const navigation = [
   { name: 'Dashboard', href: '/' },
-  { name: 'Playground', href: '/playground' }
+  { name: 'Playground', href: '/playground' },
+  { name: 'Journal', href: '/entries' },
+  { name: 'People', href: '/people' },
 ];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar({ user }: { user: any }) {
+export default function Navbar(session: {session: Session | null}) {
   const pathname = usePathname();
+  const ses = session.session;
 
   return (
     <Disclosure as="nav" className="bg-white shadow-sm">
@@ -74,10 +78,10 @@ export default function Navbar({ user }: { user: any }) {
                       <span className="sr-only">Open user menu</span>
                       <Image
                         className="h-8 w-8 rounded-full"
-                        src={user?.image || 'https://avatar.vercel.sh/leerob'}
+                        src={ses?.user?.image || 'https://avatar.vercel.sh/leerob'}
                         height={32}
                         width={32}
-                        alt={`${user?.name || 'placeholder'} avatar`}
+                        alt={`${ses?.user?.name || 'placeholder'} avatar`}
                       />
                     </Menu.Button>
                   </div>
@@ -91,7 +95,7 @@ export default function Navbar({ user }: { user: any }) {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {user ? (
+                      {ses?.user ? (
                         <Menu.Item>
                           {({ active }) => (
                             <button
@@ -157,24 +161,24 @@ export default function Navbar({ user }: { user: any }) {
               ))}
             </div>
             <div className="border-t border-gray-200 pt-4 pb-3">
-              {user ? (
+              {ses?.user ? (
                 <>
                   <div className="flex items-center px-4">
                     <div className="flex-shrink-0">
                       <Image
                         className="h-8 w-8 rounded-full"
-                        src={user.image}
+                        src={ses?.user.image ?? ""}
                         height={32}
                         width={32}
-                        alt={`${user.name} avatar`}
+                        alt={`${ses?.user.name} avatar`}
                       />
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium text-gray-800">
-                        {user.name}
+                        {ses?.user.name}
                       </div>
                       <div className="text-sm font-medium text-gray-500">
-                        {user.email}
+                        {ses?.user.email}
                       </div>
                     </div>
                   </div>
